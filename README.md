@@ -26,6 +26,9 @@ Sistema ERP/POS desarrollado en Laravel para la gestión integral de una tienda 
 ### Exportación a Excel
 ![Excel](docs/screenshots/reporte-excel.png)
 
+### API REST con respuesta JSON
+![API](docs/screenshots/api-postman.png)
+
 ---
 
 ## 🚀 Funcionalidades
@@ -110,9 +113,98 @@ Aspectos técnicos destacables:
 
 ---
 
+## 🔌 API REST
+
+El sistema expone una API REST versionada para consumo externo.
+
+### Endpoints disponibles
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/v1/products` | Lista productos con paginación y filtros |
+| GET | `/api/v1/products/{id}` | Detalle de un producto |
+
+### Parámetros de consulta (`/api/v1/products`)
+
+| Parámetro | Tipo | Descripción |
+|-----------|------|-------------|
+| `search` | string | Búsqueda parcial por nombre |
+| `category_id` | integer | Filtrar por categoría |
+| `per_page` | integer | Resultados por página (máx. 50, default 10) |
+| `page` | integer | Número de página |
+
+### Ejemplo de respuesta
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 4,
+      "image": "http://localhost:8000/storage/products/D1DvLdAspg82NPZfV2Zcb2082udyyNg4Oofi4N8O.png",
+      "name": "Asus Vivobook 15",
+      "category": {
+        "id": 2,
+        "name": "Laptops nueva"
+      },
+      "price": 2399,
+      "date": "2026-05-04 16:48:34"
+    },
+    {
+      "id": 5,
+      "image": "http://localhost:8000/storage/products/mt3GHly233FYpyAaR4Ry40ojQsqMmgZtkisy7znt.png",
+      "name": "Lenovo IdeaPad Slim 3 15IAH8",
+      "category": {
+        "id": 2,
+        "name": "Laptops nueva"
+      },
+      "price": 2589,
+      "date": "2026-05-04 17:01:47"
+    }
+  ],
+  "meta": {
+    "current_page": 2,
+    "last_page": 2,
+    "per_page": 2,
+    "total": 4
+  }
+}
+```
+
+### Repuesta de error (404)
+
+Cuando se solicita un producto que no existe:
+
+**Petición**
+
+GET api/v1/products/999
+
+**Respuesta**
+
+- Código HTTP: 404 Not Found
+- Cuerpo Json:
+
+```json
+{
+  "success": false,
+  "message": "Producto no encontrado"
+}
+```
+
+### Aspectos técnicos
+
+- **API Resources** para transformación de respuestas y desacople del modelo de BD
+- **Eager loading** (`with()`) para evitar el problema N+1
+- **Paginación** con límite máximo para prevenir abusos
+- **Versionado** con prefijo `/v1` para evolución sin romper clientes
+- **Códigos HTTP semánticos** (200, 404)
+
+---
+
 ## 📌 Roadmap
 
-- [ ] API REST con autenticación Sanctum
+- [x] API REST básica con Resources y paginación
+- [ ] Autenticación API con Sanctum
 - [ ] Tests con PHPUnit
 - [ ] Dockerización
 - [ ] Despliegue en producción
