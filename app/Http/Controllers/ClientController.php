@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Client;
-use Illuminate\Validation\Rule;
+use App\Http\Requests\StoreClientRequest;
+use App\Http\Requests\UpdateClientRequest;
 
 
 class ClientController extends Controller
@@ -42,25 +43,13 @@ class ClientController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreClientRequest $request)
     {
-        $request->validate([
-            'document_type' => 'required',
-            'document_number' => 'required|unique:clients,document_number',
-            'name' => 'required',
-        ]);
+        $data = $request->validated();
 
-        if($request->document_type == 'DNI'){
-            $request->validate(['document_number' => 'digits:8']);
-        }elseif($request->document_type == 'RUC'){
-            $request->validate(['document_number' => 'digits:11|starts_with:10,20']);
-        }elseif($request->document_type == 'CE'){
-            $request->validate(['document_number' => 'digits:9']);
-        }
+        Client::create($data);
 
-        Client::create($request->all());
-
-        return redirect()->route('clients.index')->with('message','Cliente creado exitosamente');;
+        return redirect()->route('clients.index')->with('message','Cliente creado exitosamente');
     }
 
     /**
@@ -78,31 +67,14 @@ class ClientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateClientRequest $request, Client $client)
     {
         
-        $request->validate([
-            'document_type' => 'required',
-            'document_number' => [
-                'required',
-                Rule::unique('clients')->ignore($id),
-            ],
-            'name' => 'required',
-        ]);
+        $data = $request->validated();
 
-        if($request->document_type == 'DNI'){
-            $request->validate(['document_number' => 'digits:8']);
-        }elseif($request->document_type == 'RUC'){
-            $request->validate(['document_number' => 'digits:11|starts_with:10,20']);
-        }elseif($request->document_type == 'CE'){
-            $request->validate(['document_number' => 'digits:9']);
-        }
+        $client->update($data);
 
-        $client = Client::find($id);
-
-        $client->update($request->all());
-
-        return redirect()->route('clients.index');
+        return redirect()->route('clients.index')->with('message', 'Cliente actualizado correctamente');
     }
 
     /**
