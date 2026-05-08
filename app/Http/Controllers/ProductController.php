@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Validation\Rule;
@@ -34,6 +36,11 @@ class ProductController extends Controller
      */
     public function create()
     {
+
+        if(!auth()->user()?->isAdmin()) {
+            abort(403, 'No tienes permisos para crear productos');
+        }
+
         $categories = Category::all();
 
         return view('products.create', compact('categories'));
@@ -42,16 +49,9 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $request->validate([
-            'name' => 'required|unique:products|max:255',
-            'sale_price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-        
-        $data = $request->all();
+        $data = $request->validated();
 
         if($request->hasFile('image')) {
             $path = $request->file('image')->store('products', 'public');
@@ -79,23 +79,9 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateProductRequest $request, Product $product)
     {
-
-        $product = Product::findOrFail($id);
-
-        $request->validate([
-            'name' => [
-                'required',
-                'max:255',
-                Rule::unique('products')->ignore($id),
-            ],
-            'sale_price' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-
-        $data = $request->only('name', 'category_id', 'sale_price');
+        $data = $request->validated();
 
         if($request->hasFile('image')) {
             if($product->image) {
