@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Category;
-use Illuminate\Validation\Rule;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
@@ -23,21 +24,23 @@ class CategoryController extends Controller
      */
     public function create()
     {
+        if(!auth()->user()?->isAdmin()) {
+            abort(403, 'No tienes permiso para crear categorías');
+        }    
+
         return view('categories.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $request->validate([
-            'name' => 'required|unique:categories|max:255',
-        ]);
+        $data = $request->validated();
 
-        Category::create($request->all());
+        Category::create($data);
 
-        return redirect()->route('categories.index')->with('message','Categoria creada exitosamente');;
+        return redirect()->route('categories.index')->with('message','Categoría creada exitosamente');
     }
 
     /**
@@ -53,22 +56,14 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
         
-        $request->validate([
-            'name' => [
-                'required',
-                'max:255',
-                Rule::unique('categories')->ignore($id),
-            ],
-        ]);
+        $data = $request->validated();
 
-        $category = Category::find($id);
+        $category->update($data);
 
-        $category->update($request->all());
-
-        return redirect()->route('categories.index');
+        return redirect()->route('categories.index')->with('message', 'Categoría actualizada exitosamente');
     }
 
     /**
@@ -80,6 +75,6 @@ class CategoryController extends Controller
 
         $category->delete();
 
-        return redirect()->route('categories.index')->with('message', 'Categoria eliminada exitosamente');
+        return redirect()->route('categories.index')->with('message', 'Categoría eliminada exitosamente');
     }
 }
