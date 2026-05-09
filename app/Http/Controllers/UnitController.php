@@ -49,6 +49,8 @@ class UnitController extends Controller
     {
         $data = $request->validated();
 
+        $data['status'] = 'disponible';
+
         Unit::create($data);
 
         return redirect()->route('units.index')->with('message', 'Unidad creada correctamente');
@@ -74,8 +76,6 @@ class UnitController extends Controller
     {
         
         $data = $request->validated();
-
-        $data['status'] = 'disponible';
 
         $unit->update($data);
 
