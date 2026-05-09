@@ -45,16 +45,11 @@ class UnitController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUnitRequest $request)
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'serial_number' => 'required|unique:units|max:255',
-        ]);
+        $data = $request->validated();
 
-        $request->merge(['status' => 'disponible']);
-
-        Unit::create($request->all());
+        Unit::create($data);
 
         return redirect()->route('units.index')->with('message', 'Unidad creada correctamente');
     }
@@ -75,23 +70,14 @@ class UnitController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateUnitRequest $request, Unit $unit)
     {
         
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'serial_number' => [
-                'required',
-                'max:255',
-                Rule::unique('units')->ignore($id)
-            ]
-        ]);
+        $data = $request->validated();
 
-        $request->merge(['status' => 'disponible']);
+        $data['status'] = 'disponible';
 
-        $unit = Unit::find($id);
-
-        $unit->update($request->all());
+        $unit->update($data);
 
         return redirect()->route('units.index')->with('message', 'Unidad actualizada correctamente');
     }
