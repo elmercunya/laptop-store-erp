@@ -13,6 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\SalesExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\StoreSaleRequest;
 
 class SaleController extends Controller
 {
@@ -56,14 +57,17 @@ class SaleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreSaleRequest $request)
     {
+        
+        $datos = $request->validated();
+
         DB::beginTransaction();
 
         try {
-            $prices = $request->prices;
+            $prices = $datos['prices'];
 
-            $unit_ids = $request->unit_ids;
+            $unit_ids = $datos['unit_ids'];
 
             $total = 0;
 
@@ -77,14 +81,14 @@ class SaleController extends Controller
 
             $date = Carbon::now()->toDateString();
 
-            $type = $request->voucher;
+            $type = $datos['voucher'];
 
-            $lastSale = Sale::where('voucher', $type)->latest('number')->first();
+            $lastSale = Sale::where('voucher', $type)->lockForUpdate()->latest('number')->first();
             $nextNumber = $lastSale ? intval(str_replace("V-", "", $lastSale->number)) + 1 : 1;
             $number = 'V-' .str_pad($nextNumber, 6, 0, STR_PAD_LEFT);
 
             $sale = Sale::create([
-                'client_id' => $request->client_id,
+                'client_id' => $datos['client_id'],
                 'voucher' => $type,
                 'number' => $number,
                 'date' => $date,
@@ -93,14 +97,21 @@ class SaleController extends Controller
                 'total' => $total
             ]);
 
-            for($i = 0; $i < count($unit_ids); $i++) {
+            sort($unit_ids);
+            
+            foreach($unit_ids as $index => $unitId) {
+
+                $unit = Unit::where('id', $unitId)->lockForUpdate()->firstOrFail();
+
+                if($unit->status !== 'disponible') {
+                    throw new \Exception("La unidad con serie {$unit->serial_number} ya no está disponible");
+                }
+
                 SaleDetail::create([
                     'sale_id' => $sale->id,
-                    'unit_id' => $unit_ids[$i],
-                    'price' => $prices[$i],
+                    'unit_id' => $unitId,
+                    'price' => $prices[$index],
                 ]);
-
-                $unit = Unit::find($unit_ids[$i]);
 
                 $unit->update([
                     'status' => 'vendido',
@@ -115,7 +126,7 @@ class SaleController extends Controller
 
         } catch(\Exception $e) {
             DB::rollback();
-            return back()->with('message', 'Hubo un error al procesar la venta'. $e->getMessage());
+            return back()->with('message', 'Hubo un error al procesar la venta: ' . $e->getMessage());
         }
     }
 

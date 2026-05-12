@@ -3,10 +3,12 @@
 @section('content')
     <h1>Crear Venta</h1>
 
-    @if(session('message'))
-        <div>
-            <p style="color:red">{{session('message')}}</p>
-        </div>
+    @if($errors->any())
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{$error}}</li>
+            @endforeach
+        </ul>
     @endif
 
     <form action="{{route('sales.store')}}" method="POST">
@@ -24,7 +26,7 @@
             <label>Voucher:</label>
             <select name="voucher" class="form-control mb-2">
                 @foreach($vouchers as $voucher)
-                    <option value="{{$voucher}}">{{$voucher}}</option>
+                    <option value="{{$voucher}}" {{old('voucher') == $voucher ? 'selected':''}}>{{$voucher}}</option>
                 @endforeach
             </select>
         </div>
