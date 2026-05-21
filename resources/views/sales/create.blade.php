@@ -89,7 +89,6 @@
             fetch(`{{route('api.clients.search')}}?q=${query}`)
                 .then(response => response.json())
                 .then(data => {                              // abre then
-                    console.log("Datos recibidos de Laravel:", data); 
                     resultsClients.innerHTML = '';
                     
                     if(data.length === 0) {                  // abre if
@@ -137,10 +136,10 @@
         const tempUnitSerial = document.getElementById('temp_unit_serial');
         const tempUnitPrice = document.getElementById('temp_unit_price');
 
-        searchInput.addEventListener('keyup', function() {
-            let query = this.value;
+        searchInput.addEventListener('input', function() {
+            let query = this.value.trim();
 
-            if (query.length === 0) {
+            if (query.length < 2) {
                 searchResults.style.display = 'none';
                 searchResults.innerHTML = '';
                 return;
@@ -149,8 +148,6 @@
             fetch(`{{ route('api.units.search') }}?q=${query}`)
                 .then(response => response.json())
                 .then(data => {
-                    // 1. IMPRIMIMOS EN CONSOLA PARA VER QUE LLEGA
-                    console.log("Datos recibidos de Laravel:", data); 
 
                     searchResults.innerHTML = ''; 
 
@@ -169,7 +166,6 @@
                                 ? `${baseUrl}/storage/${unit.product.image}` 
                                 : `${baseUrl}/img/no-image.png`;
                             
-                            console.log(imagePath);
 
                             li.innerHTML = `
                                 <div style="display: flex; align-items: center;">
@@ -180,8 +176,6 @@
                                     </div>
                                 </div>
                             `;
-
-
                             
                             li.onmouseover = function() { this.style.backgroundColor = '#f8f9fa'; }
                             li.onmouseout = function() { this.style.backgroundColor = 'white'; }
