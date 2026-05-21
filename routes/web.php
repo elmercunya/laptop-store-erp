@@ -10,6 +10,11 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
 
+// Redirigir raíz a login
+Route::get('/', function () {
+    return redirect('/login');
+});
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
