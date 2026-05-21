@@ -1,7 +1,6 @@
 # 1. Traemos la base para el proyecto (Php, Apache y el sistema operativo)
 FROM php:8.2-apache
 
-
 # 2. Configuramos esa base para que tenga todo lo necesario a la hora de usar mi sistema
 RUN apt-get update && apt-get install -y \
     git \
@@ -17,12 +16,10 @@ RUN apt-get update && apt-get install -y \
 
 RUN a2enmod rewrite
 
-
 # 3. Cambiamos por defecto la ruta de Apache para que sea public (Seguridad)
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
 
 # 4. Traemos a Composer (el instalador de librerías de PHP)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -37,11 +34,13 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # 7. Exponemos el puerto y damos el botón de encendido al servidor
-EXPOSE 10000
+# ⚠️ AGREGADO: Configurar Apache para Render (puerto 10000)
+RUN echo "Listen 10000" > /etc/apache2/ports.conf && \
+    echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 EXPOSE 10000
 CMD php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
-    php artisan migrate --force && \
-    php artisan db:seed --force && \
+    php artisan migrate:fresh --seed --force && \
     apache2-foreground
