@@ -38,8 +38,10 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 # 7. Exponemos el puerto y damos el botón de encendido al servidor
 EXPOSE 10000
+EXPOSE 10000
 CMD php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
     php artisan migrate --force && \
+    php artisan db:seed --force && \
     apache2-foreground
