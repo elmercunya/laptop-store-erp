@@ -6,6 +6,12 @@ Sistema ERP/POS desarrollado en Laravel para la gestión integral de una tienda 
 
 ---
 
+> 🌐 **Demo en vivo:** https://laptop-store-erp.onrender.com  
+> 👤 **Acceso demo:** `admin` / `admin123`  
+> ⚠️ *Servidor gratuito: la primera carga puede tardar ~50-60 segundos (cold start).*
+
+---
+
 ## 📸 Capturas
 
 ### Dashboard con KPIs y reportes
