@@ -51,6 +51,37 @@ Sistema ERP/POS desarrollado en Laravel para la gestión integral de una tienda 
 
 ---
 
+## 🧠 Decisiones técnicas
+
+### 🔒 Bloqueo pesimista en el registro de ventas
+
+**Problema:** Si dos usuarios venden simultáneamente la última unidad de una laptop, ambas peticiones podrían pasar la validación, dejando el inventario en negativo.
+**Solución elegida:** Implementé `DB::transaction` junto con `lockForUpdate` en el `SaleController` para bloquear la lectura de la fila.
+**Por qué pesimista:** En un POS, la concurrencia es normal. Elegí el bloqueo pesimista porque usar el optimista obligaría a cancelar y rehacer la venta completa ante un choque, afectando al cajero.
+**Trade-off aceptado:** Contención temporal de la fila (milisegundos), un costo mínimo frente a garantizar un inventario 100% consistente.
+
+### ⚡ Eager Loading para mitigar el problema de consultas N+1
+
+**Problema:** Al listar 50 ventas en el dashboard junto con sus relaciones, el comportamiento por defecto de Eloquent (Lazy Loading) disparaba 51 consultas a la base de datos (N+1), aumentando drásticamente la latencia de red.
+**Solución elegida:** Implementé Eager Loading utilizando el método `with(['client', 'details.product'])` en los controladores encargados de los listados y reportes.
+**Por qué Eager Loading:** Opté por esta técnica porque consolida la carga de datos relacionados en solo 2 queries centralizadas, reduciendo de inmediato el tiempo de respuesta del servidor.
+**Trade-off aceptado:** Incremento menor en el uso de memoria RAM para almacenar los modelos hidratados, un costo imperceptible frente a la ganancia en fluidez y velocidad del sistema.
+
+### 🛡️ Form Requests para Validación y Autorización
+
+**Problema:** Mezclar la lógica de validación y autorización dentro de los controladores generaba clases sobrecargadas y violaba el Principio de Responsabilidad Única.
+**Solución elegida:** Implementé clases FormRequest personalizadas (ej. `StoreProductRequest`) utilizando el método `authorize()` para validar roles y `rules()` para las reglas de negocio.
+**Por qué Form Requests:** Decidí usar esta capa intermedia para aislar la seguridad y garantizar que el controlador reciba únicamente datos limpios, centralizando además los mensajes de error.
+**Trade-off aceptado:** Aumento en la cantidad de archivos del proyecto, un sacrificio necesario a cambio de un código modular, testeable y fácil de mantener.
+
+### 📡 API Resources para un Contrato Estable
+**Problema:** Devolver modelos de Eloquent directamente en las respuestas de la API exponía la estructura interna de la base de datos y amenazaba con romper las aplicaciones cliente ante cualquier cambio de columnas.
+**Solución elegida:** Implementé clases `JsonResource` para transformar las respuestas JSON y apliqué paginación nativa en los endpoints de listados.
+**Por qué API Resources:** Decidí crear esta capa para establecer un contrato de datos estable. Así puedo refactorizar la base de datos internamente sin afectar a los consumidores de la API.
+**Trade-off aceptado:** Agrega una capa extra de procesamiento de datos, un costo menor frente al beneficio de mantener el encapsulamiento y la retrocompatibilidad.
+
+---
+
 ## 🛠️ Stack Técnico
 
 | Categoría | Tecnología |
