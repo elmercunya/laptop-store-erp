@@ -63,7 +63,7 @@ Sistema ERP/POS desarrollado en Laravel para la gestión integral de una tienda 
 ### ⚡ Eager Loading para mitigar el problema de consultas N+1
 
 **Problema:** Al listar 50 ventas en el dashboard junto con sus relaciones, el comportamiento por defecto de Eloquent (Lazy Loading) disparaba 51 consultas a la base de datos (N+1), aumentando drásticamente la latencia de red.
-**Solución elegida:** Implementé Eager Loading utilizando el método `with(['client', 'details.product'])` en los controladores encargados de los listados y reportes.
+**Solución elegida:** Implementé Eager Loading utilizando `with('client')` al listar ventas y `with('product')` al cargar unidades disponibles en el formulario de venta
 **Por qué Eager Loading:** Opté por esta técnica porque consolida la carga de datos relacionados en solo 2 queries centralizadas, reduciendo de inmediato el tiempo de respuesta del servidor.
 **Trade-off aceptado:** Incremento menor en el uso de memoria RAM para almacenar los modelos hidratados, un costo imperceptible frente a la ganancia en fluidez y velocidad del sistema.
 
