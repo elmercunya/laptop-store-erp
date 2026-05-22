@@ -42,11 +42,14 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Creación del enlace simbólico para las imágenes en el build
+RUN php artisan storage:link
+
 EXPOSE 10000
 
-# 6. ENCENDIDO
+# 6. ENCENDIDO (Corregido para producción)
 CMD php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
-    php artisan migrate:fresh --seed --force && \
+    php artisan migrate --force && \
     apache2-foreground
