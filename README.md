@@ -61,6 +61,7 @@ Sistema ERP/POS desarrollado en Laravel para la gestión integral de una tienda 
 | Visualización | Chart.js |
 | Reportes | DomPDF, Laravel Excel (Maatwebsite) |
 | Autenticación | Laravel Auth + Middleware de roles |
+| Infraestructura / DevOps | Docker, Render (Web Service), Clever Cloud (MySQL) |
 
 ---
 
@@ -151,7 +152,7 @@ El sistema expone una API REST versionada para consumo externo.
       "name": "Asus Vivobook 15",
       "category": {
         "id": 2,
-        "name": "Laptops nueva"
+        "name": "Laptops nuevas"
       },
       "price": 2399,
       "date": "2026-05-04 16:48:34"
@@ -162,7 +163,7 @@ El sistema expone una API REST versionada para consumo externo.
       "name": "Lenovo IdeaPad Slim 3 15IAH8",
       "category": {
         "id": 2,
-        "name": "Laptops nueva"
+        "name": "Laptops nuevas"
       },
       "price": 2589,
       "date": "2026-05-04 17:01:47"
@@ -212,8 +213,8 @@ GET api/v1/products/999
 - [x] API REST básica con Resources y paginación
 - [ ] Autenticación API con Sanctum
 - [ ] Tests con PHPUnit
-- [ ] Dockerización
-- [ ] Despliegue en producción
+- [x] Dockerización
+- [x] Despliegue en producción
 
 ---
 
@@ -221,5 +222,5 @@ GET api/v1/products/999
 
 **Elmer Benjamin Cunya Quiroz** — Desarrollador Backend Junior
 - 📧 elmer.cunyaq@gmail.com
-- 💼 LinkedIn: Próximamente
+- 💼 LinkedIn: [in/elmer-cunya](https://www.linkedin.com/in/elmer-cunya)
 - 🐙 GitHub: https://github.com/elmercunya
