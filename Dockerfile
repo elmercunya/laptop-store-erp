@@ -1,47 +1,50 @@
-# BASE: PHP 8.2 + Apache (necesario para Laravel)
 FROM php:8.2-apache
 
-# EXTENSIONES: Instala solo lo que Laravel necesita para funcionar
-# pdo_mysql → conexión a MySQL
-# mbstring, xml, zip, curl → dependencias core de Laravel
+# 1. CORRECCIÓN LIBRERÍAS: Agregamos libcurl4-openssl-dev para que compile la extensión de PHP
 RUN apt-get update && apt-get install -y \
-    git curl libzip-dev zip unzip libpng-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo_mysql mbstring xml curl zip \
+    git \
+    curl \
+    libcurl4-openssl-dev \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip curl \
     && rm -rf /var/lib/apt/lists/*
 
-# REWRITE: Necesario para que Laravel maneje las rutas (sin esto, 404 en todas las rutas)
+# 2. Habilitar mod_rewrite (Rutas de Laravel)
 RUN a2enmod rewrite
 
-# APACHE: Permite que Apache sirva la carpeta public/ de Laravel
-# Sin esto, Apache deniega acceso por seguridad (error 403 Forbidden)
+# 3. CORRECCIÓN PUERTO: Forzar a Apache a escuchar en 10000 (Render lo exige)
+RUN sed -i 's/Listen 80/Listen 10000/g' /etc/apache2/ports.conf
+
+# 4. CORRECCIÓN SEGURIDAD: Apuntar a public/ Y DAR PERMISOS (El 403 se arregla aquí)
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Agregamos la directiva que faltaba para evitar el 403
 RUN echo '<Directory /var/www/html/public>' >> /etc/apache2/apache2.conf \
     && echo '    Require all granted' >> /etc/apache2/apache2.conf \
     && echo '</Directory>' >> /etc/apache2/apache2.conf
 
-# COMPOSER: Copia el instalador de dependencias de PHP
+# 5. Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# DIRECTORIO: Define dónde estará el código dentro del contenedor
 WORKDIR /var/www/html
-
-# CÓDIGO: Copia todo tu proyecto Laravel al contenedor
 COPY . /var/www/html
 
-# PERMISOS: Laravel necesita escribir en storage/ y bootstrap/cache/
-# Sin esto, error 500 al subir imágenes o cachear config
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
-
-# DEPENDENCIAS: Instala solo librerías de producción (más rápido, menos peso)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# PUERTO: Render requiere que la app escuche en 10000 (no en 80)
+# Permisos de carpetas
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
 EXPOSE 10000
 
-# ARRANQUE: Prepara Laravel y levanta Apache
-# config:cache, route:cache, view:cache → optimización para producción
-# migrate:fresh --seed → crea tablas y crea usuario admin
-# apache2-foreground → mantiene el contenedor vivo
+# 6. CORRECCIÓN SEED: migrate:fresh --seed --force para crear usuario admin
 CMD php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
