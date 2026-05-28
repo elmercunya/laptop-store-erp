@@ -5,7 +5,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('admin con credenciales correctas inicia sesión y ve dashboard', function () {
+it('admin con credenciales correctas inicia sesión y ve dashboard', function () {
 
     // Se crea el usuario de prueba para el test
     $admin = User::factory()->create([
@@ -28,7 +28,7 @@ test('admin con credenciales correctas inicia sesión y ve dashboard', function 
 
 });
 
-test('usuario con contraseña incorrecta no inicia sesión', function () {
+it('usuario con contraseña incorrecta no inicia sesión', function () {
     // ARRANGE: crear usuario admin con factory (mismo que arriba)
     $admin = User::factory()->create([
         'user' => 'admin_test',
