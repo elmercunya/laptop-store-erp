@@ -1,0 +1,44 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Descargamos el código
+    - uses: actions/checkout@v4
+    
+    # 2. Configuramos PHP con sus extensiones
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, mysql, zip
+        coverage: none
+    
+    # 3. Instalamos dependencias optimizando el cargador
+    - name: Install Composer dependencies
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader
+    
+    # 4. Preparamos el entorno de Laravel
+    - name: Prepare Application
+      run: |
+        cp .env.example .env
+        php artisan key:generate
+    
+    # 5. Damos permisos de escritura a las carpetas de Laravel (Evita bloqueos de Ubuntu)
+    - name: Directory Permissions
+      run: chmod -R 777 storage bootstrap/cache
+    
+    # 6. Corremos Pest forzando SQLite en memoria para que no falle jamás
+    - name: Run Tests
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: ":memory:"
+      run: ./vendor/bin/pest --ci
