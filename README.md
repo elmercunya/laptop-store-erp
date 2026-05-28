@@ -1,5 +1,7 @@
 # 🖥️ ERP/POS — Sistema de Gestión para Tienda de Laptops
 
+![Tests](https://github.com/elmercunya/laptop-store-erp/actions/workflows/tests.yml/badge.svg)
+
 Sistema ERP/POS desarrollado en Laravel para la gestión integral de una tienda de laptops: control de inventario por número de serie, ventas con carrito dinámico, facturación en PDF, reportes en Excel y dashboard con indicadores clave.
 
 > Proyecto desarrollado como práctica intensiva para aplicar a posiciones Junior Backend Developer.
@@ -243,7 +245,7 @@ GET api/v1/products/999
 
 - [x] API REST básica con Resources y paginación
 - [ ] Autenticación API con Sanctum
-- [ ] Tests con PHPUnit
+- [x] Tests con Pest
 - [x] Dockerización
 - [x] Despliegue en producción
 
