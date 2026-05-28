@@ -9,3 +9,4 @@ Stack: Laravel, MySQL, Blade, Bootstrap 5, Ajax, Js nativo.
 | 2 | 2026-05-26 | Abbost | Programador Junior PHP | Híbrido (Lima) | Computrabajo | https://pe.computrabajo.com/ofertas-de-trabajo/oferta-de-trabajo-de-programador-junior-php-trabajo-remoto-flexible-en-lima-FE13FCDAFE1DE2D661373E686DCF3405?fgoa=true | Enviada |
 | 3 | 2026-05-26 | Golden System | Desarrollador PHP Laravel | Híbrido (Lima) | Computrabajo | https://pe.computrabajo.com/ofertas-de-trabajo/oferta-de-trabajo-de-desarrollador-php-en-san-juan-de-lurigancho-2B37B38865FB1DFB61373E686DCF3405?fgoa=true | Enviada |
 | 4 | 2026-05-28 | Agent Legend | PHP/Laravel Developer | Remoto | GetOnBoard | https://www.getonbrd.com/empleos/programacion/php-laravel-developer-agent-legend-remote | Enviada |
+| 5 | 2026-05-28 | Brain Box Labs | Senior Full-Stack Developer | Remoto | GetOnBoard | https://www.getonbrd.com/empleos/programacion/senior-web-developer-brain-box-labs-remote-862d | Enviada |
