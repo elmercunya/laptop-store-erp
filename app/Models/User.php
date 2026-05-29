@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use SoftDeletes;
-    use HasFactory;
+    use SoftDeletes, HasFactory, HasApiTokens;
 
     protected $fillable = [
         'name',
