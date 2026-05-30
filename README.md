@@ -225,7 +225,10 @@ La API está protegida con Laravel Sanctum (Bearer tokens). El único endpoint p
 | Usuario | `admin` |
 | Password | `admin123` |
 
-> ⚠️ Datos desechables: el deploy en Render se reinicia con `migrate:fresh --seed` periódicamente. Cualquier dato que generes durante la prueba puede desaparecer. El primer request puede tardar ~50–60s por cold start de Render — los siguientes vuelan.
+> ⚠️ **Nota sobre el demo en vivo (plan gratuito de Render):**
+> - **Cold start:** El primer request puede tardar ~50-60s si el servicio estaba dormido por inactividad.
+> - **Base de datos (MySQL en Clever Cloud):** Los datos persisten entre reinicios del contenedor (productos, ventas, clientes registrados no se pierden).
+> - **Archivos subidos (imágenes de productos, PDFs de comprobantes):** Se almacenan en el filesystem efímero del contenedor y se pierden cuando Render reinicia el servicio (~cada 24h). Los datos asociados en BD permanecen, solo desaparece el archivo físico.
 
 ### Endpoints disponibles
 
