@@ -21,7 +21,7 @@ class Unit extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function saleDetail(): HashOne {
-        return $this->hashOne(SalDetail::class);
+    public function saleDetail(): HasOne {
+        return $this->hasOne(SaleDetail::class);
     }
 }
