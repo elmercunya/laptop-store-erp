@@ -16,6 +16,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        if (\App\Models\Product::count() > 0) {
+        return;
+    }
+
 
         $category = Category::create(['name' => 'Laptops']);
 

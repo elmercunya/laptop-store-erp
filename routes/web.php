@@ -33,3 +33,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/search-clients', [SaleController::class, 'searchClients'])->name('api.clients.search');
 });
 
+Route::get('/run-seeder', function () {
+    Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
+    return 'Demo reseteado y poblado correctamente.';
+});
+
