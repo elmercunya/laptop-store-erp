@@ -220,10 +220,10 @@
 
         function calculateTotals() {
             let total = 0;
-            const priceInputs = document.querySelectorAll('input[name="prices[]"]');
+            const priceRows = document.querySelectorAll('tr[data-price]');
 
-            priceInputs.forEach(function(input) {
-                total += parseFloat(input.value);
+            priceRows.forEach(function(row) {
+                total += parseFloat(row.getAttribute('data-price'));
             });
 
             const subtotal = total / 1.18;
@@ -251,7 +251,7 @@
 
             const tbody = document.getElementById('details_body');
             const rowHTML = `
-                <tr id="row_${unitId}">
+                <tr id="row_${unitId}" data-price = "${unitPrice}">
                     <td> ${unitName} </td>
                     <td> ${unitSerial} </td>
                     <td>
