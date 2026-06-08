@@ -255,7 +255,6 @@
                     <td> ${unitName} </td>
                     <td> ${unitSerial} </td>
                     <td>
-                        <input type="hidden" name="prices[]" value="${unitPrice}">
                         <input type="hidden" name="unit_ids[]" value="${unitId}">
                         S/ ${parseFloat(unitPrice).toFixed(2)}
                     </td>

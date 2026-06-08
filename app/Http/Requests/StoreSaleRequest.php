@@ -24,18 +24,6 @@ class StoreSaleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'prices' => [
-                'required',
-                'array',
-                'min:1'
-            ],
-
-            'prices.*' => [
-                'required',
-                'numeric',
-                'min:0'
-            ],
-
             'unit_ids' => [
                 'required',
                 'array',
@@ -62,13 +50,9 @@ class StoreSaleRequest extends FormRequest
 
     public function messages(): array {
         return [
-            'prices.*.required' => 'El precio es obligatorio.',
-            'prices.*.numeric' => 'El precio solo debe ser númerico.',
-            'prices.*.min' => 'El precio no puede ser negativo.',
             'unit_ids.*.exists' => 'La unidad seleccionada no existe.',
             'voucher.in' => 'El tipo de voucher es nota de venta, boleta o factura.',
             'client_id.exists' => 'El cliente seleccionado no existe',
-            'prices.required' => 'Debe agregar al menos un producto al carrito.',
             'unit_ids.required' => 'Debe seleccionar al menos una unidad.',
             'voucher.required' => 'El tipo de comprobante es obligatorio.',
             'client_id.required' => 'Debe seleccionar un cliente.'
@@ -77,7 +61,6 @@ class StoreSaleRequest extends FormRequest
 
     public function attributes(): array {
         return [
-            'prices' => 'precio',
             'client_id' => 'cliente',
             'unit_ids' => 'unidad',
             'voucher' => 'voucher'

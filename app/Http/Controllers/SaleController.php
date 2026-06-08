@@ -65,14 +65,14 @@ class SaleController extends Controller
         DB::beginTransaction();
 
         try {
-            $prices = $datos['prices'];
-
             $unit_ids = $datos['unit_ids'];
 
             $total = 0;
 
-            foreach($prices as $price) {
-                $total += $price;
+            foreach($unit_ids as $unitId) {
+                $unit = Unit::with('product')->find($unitId);
+
+                $total = $total + $unit->product->sale_price;
             }
 
             $subtotal = $total / 1.18;
@@ -99,9 +99,9 @@ class SaleController extends Controller
 
             sort($unit_ids);
             
-            foreach($unit_ids as $index => $unitId) {
+            foreach($unit_ids as $unitId) {
 
-                $unit = Unit::where('id', $unitId)->lockForUpdate()->firstOrFail();
+                $unit = Unit::with('product')->where('id', $unitId)->lockForUpdate()->firstOrFail();
 
                 if($unit->status !== 'disponible') {
                     throw new \Exception("La unidad con serie {$unit->serial_number} ya no está disponible");
@@ -110,7 +110,7 @@ class SaleController extends Controller
                 SaleDetail::create([
                     'sale_id' => $sale->id,
                     'unit_id' => $unitId,
-                    'price' => $prices[$index],
+                    'price' => $unit->product->sale_price,
                 ]);
 
                 $unit->update([
